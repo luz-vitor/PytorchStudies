@@ -113,3 +113,48 @@ plt.plot(range(epochs), losses)
 plt.ylabel("loss/error")
 plt.xlabel("Epoch")
 plt.show()
+
+## Evaluate Model on Test Data Set (validate model on test set)
+with torch.no_grad():  # Basically turn off back propagation
+    y_eval = model.forward(
+        X_test
+    )  # X_test are features from our test set, y_eval will be predictions
+    loss = criterion(y_eval, y_test)  # Find the loss or error
+
+correct = 0
+with torch.no_grad():
+    for i, data in enumerate(X_test):
+        y_val = model.forward(data)
+
+        if y_test[i] == 0:
+            x = "Setosa"
+        elif y_test[i] == 1:
+            x = "Versicolor"
+        else:
+            x = "Virginica"
+
+        # Will tell us what type of flower class our network think it is
+        print(f"{i+1}.) {str(y_val)} \t {x} \t expected: {y_val.argmax().item()}")
+
+        # Correct or not
+        if y_val.argmax().item() == y_test[i]:
+            correct += 1
+
+print(f"We got {correct} correct!")
+
+# Adding new data
+new_iris = torch.tensor([4.7, 3.2, 1.3, 0.2])
+
+with torch.no_grad():
+    print(model(new_iris))
+
+# Save our NN Model
+
+torch.save(model.state_dict(), "my_iris_model.pt")
+
+# Load the Saved Model
+new_model = Model()
+new_model.load_state_dict(torch.load("my_iris_model.pt"))
+
+# Make sure it loaded correctly
+print(new_model.eval())
